@@ -1,0 +1,69 @@
+/* INGRES AI ChatBot - App-specific styles */
+
+/* App-specific overrides and custom styles */
+.app-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Custom animations for the app */
+@keyframes water-drop {
+  0% {
+    transform: translateY(-20px);
+    opacity: 0;
+  }
+  50% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+}
+
+.water-drop-animation {
+  animation: water-drop 3s ease-in-out infinite;
+}
+
+/* Custom glassmorphism effects */
+.glass-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Custom neon effects */
+.neon-text {
+  text-shadow: 
+    0 0 5px currentColor,
+    0 0 10px currentColor,
+    0 0 15px currentColor,
+    0 0 20px currentColor;
+}
+
+/* Custom gradient backgrounds */
+.gradient-bg {
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+}
+
+/* Custom scrollbar for the app */
+.app-scrollbar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.app-scrollbar::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 3px;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, #FF9933, #138808);
+  border-radius: 3px;
+}
+
+.app-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ffb366, #2ba015);
+}

@@ -1,0 +1,146 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: ingres-postgres
+    environment:
+      POSTGRES_DB: ingres_groundwater
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ingres_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - ingres-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ingres-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - ingres-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ingres-backend
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=ingres_groundwater
+      - DB_USER=postgres
+      - DB_PASSWORD=ingres_password
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=info
+    volumes:
+      - ./backend:/app
+      - model_data:/models
+    ports:
+      - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - ingres-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Model Server
+  model-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.model-server
+    container_name: ingres-model-server
+    environment:
+      - MODEL_PATH=/models/your-trained-model
+      - LOG_LEVEL=info
+    volumes:
+      - model_data:/models
+    ports:
+      - "8001:8001"
+    networks:
+      - ingres-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Frontend
+  frontend:
+    build:
+      context: ./frontend/ingres_chatbot
+      dockerfile: Dockerfile
+    container_name: ingres-frontend
+    environment:
+      - VITE_API_BASE_URL=http://localhost:8000
+      - VITE_MODEL_SERVER_URL=http://localhost:8001
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+      - model-server
+    networks:
+      - ingres-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Nginx Reverse Proxy (Optional)
+  nginx:
+    image: nginx:alpine
+    container_name: ingres-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./deployment/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./deployment/nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - frontend
+      - backend
+      - model-server
+    networks:
+      - ingres-network
+    profiles:
+      - production
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  model_data:
+    driver: local
+
+networks:
+  ingres-network:
+    driver: bridge

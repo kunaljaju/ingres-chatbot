@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: ingres-postgres-dev
+    environment:
+      POSTGRES_DB: ingres_groundwater
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ingres_password
+      POSTGRES_HOST_AUTH_METHOD: trust
+    volumes:
+      - postgres_data_dev:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+    ports:
+      - "5432:5432"
+    networks:
+      - ingres-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: ingres-redis-dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data_dev:/data
+    networks:
+      - ingres-network
+
+  # Backend API (Development)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ingres-backend-dev
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_NAME=ingres_groundwater
+      - DB_USER=postgres
+      - DB_PASSWORD=ingres_password
+      - REDIS_URL=redis://redis:6379
+      - LOG_LEVEL=debug
+      - PYTHONPATH=/app
+    volumes:
+      - ./backend:/app
+      - model_data_dev:/models
+    ports:
+      - "8000:8000"
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - ingres-network
+    command: ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+
+  # Model Server (Development)
+  model-server:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.model-server
+    container_name: ingres-model-server-dev
+    environment:
+      - MODEL_PATH=/models/your-trained-model
+      - LOG_LEVEL=debug
+      - PYTHONPATH=/app
+    volumes:
+      - ./backend:/app
+      - model_data_dev:/models
+    ports:
+      - "8001:8001"
+    networks:
+      - ingres-network
+    command: ["uvicorn", "model_server:app", "--host", "0.0.0.0", "--port", "8001", "--reload"]
+
+volumes:
+  postgres_data_dev:
+    driver: local
+  redis_data_dev:
+    driver: local
+  model_data_dev:
+    driver: local
+
+networks:
+  ingres-network:
+    driver: bridge

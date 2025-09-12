@@ -1,0 +1,282 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
+/* Custom CSS Variables */
+:root {
+  --saffron: #FF9933;
+  --indian-green: #138808;
+  --white: #FFFFFF;
+  --dark-navy: #0a0a0f;
+  --dark-blue: #1a1a2e;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.1);
+}
+
+/* Base Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: linear-gradient(135deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+  color: #ffffff;
+  min-height: 100vh;
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Background Pattern */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(255, 153, 51, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(19, 136, 8, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.02) 0%, transparent 50%);
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* Glassmorphism Components */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+.glass-strong {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.5);
+}
+
+/* Neon Glow Effects */
+.neon-saffron {
+  box-shadow: 0 0 5px var(--saffron), 0 0 10px var(--saffron), 0 0 15px var(--saffron);
+  text-shadow: 0 0 5px var(--saffron);
+}
+
+.neon-green {
+  box-shadow: 0 0 5px var(--indian-green), 0 0 10px var(--indian-green), 0 0 15px var(--indian-green);
+  text-shadow: 0 0 5px var(--indian-green);
+}
+
+.neon-blue {
+  box-shadow: 0 0 5px #00ffff, 0 0 10px #00ffff, 0 0 15px #00ffff;
+  text-shadow: 0 0 5px #00ffff;
+}
+
+/* Button Styles */
+.btn-neon {
+  position: relative;
+  background: transparent;
+  border: 2px solid var(--saffron);
+  color: var(--saffron);
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.btn-neon::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 153, 51, 0.2), transparent);
+  transition: left 0.5s;
+}
+
+.btn-neon:hover::before {
+  left: 100%;
+}
+
+.btn-neon:hover {
+  color: #000;
+  background: var(--saffron);
+  box-shadow: 0 0 20px var(--saffron);
+  transform: translateY(-2px);
+}
+
+.btn-neon-green {
+  border-color: var(--indian-green);
+  color: var(--indian-green);
+}
+
+.btn-neon-green::before {
+  background: linear-gradient(90deg, transparent, rgba(19, 136, 8, 0.2), transparent);
+}
+
+.btn-neon-green:hover {
+  color: #000;
+  background: var(--indian-green);
+  box-shadow: 0 0 20px var(--indian-green);
+}
+
+/* Input Styles */
+.input-neon {
+  background: rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 12px 16px;
+  color: #ffffff;
+  font-size: 16px;
+  transition: all 0.3s ease;
+  backdrop-filter: blur(10px);
+}
+
+.input-neon:focus {
+  outline: none;
+  border-color: var(--saffron);
+  box-shadow: 0 0 10px rgba(255, 153, 51, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.input-neon::placeholder {
+  color: rgba(255, 255, 255, 0.5);
+}
+
+/* Chat Bubble Styles */
+.chat-bubble-user {
+  background: linear-gradient(135deg, rgba(255, 153, 51, 0.2) 0%, rgba(255, 153, 51, 0.1) 100%);
+  border: 1px solid rgba(255, 153, 51, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(255, 153, 51, 0.2);
+}
+
+.chat-bubble-ai {
+  background: linear-gradient(135deg, rgba(19, 136, 8, 0.2) 0%, rgba(19, 136, 8, 0.1) 100%);
+  border: 1px solid rgba(19, 136, 8, 0.3);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 15px rgba(19, 136, 8, 0.2);
+}
+
+/* Loading Spinner */
+.spinner-neon {
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(255, 153, 51, 0.3);
+  border-top: 3px solid var(--saffron);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  box-shadow: 0 0 10px var(--saffron);
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(45deg, var(--saffron), var(--indian-green));
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(45deg, #ffb366, #2ba015);
+}
+
+/* Typography */
+.text-glow {
+  text-shadow: 0 0 10px currentColor;
+}
+
+.text-gradient {
+  background: linear-gradient(45deg, var(--saffron), var(--indian-green));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Card Styles */
+.card-glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(15px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+  transition: all 0.3s ease;
+}
+
+.card-glass:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 153, 51, 0.3);
+  box-shadow: 0 8px 32px 0 rgba(255, 153, 51, 0.2);
+  transform: translateY(-2px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .glass {
+    backdrop-filter: blur(8px);
+  }
+  
+  .btn-neon {
+    padding: 10px 20px;
+    font-size: 14px;
+  }
+  
+  .input-neon {
+    padding: 10px 14px;
+    font-size: 14px;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Focus styles for accessibility */
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--saffron);
+  outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .glass {
+    background: rgba(0, 0, 0, 0.8);
+    border: 2px solid #ffffff;
+  }
+  
+  .btn-neon {
+    border-width: 3px;
+  }
+}
